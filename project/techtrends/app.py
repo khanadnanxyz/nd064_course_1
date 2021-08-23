@@ -1,7 +1,8 @@
+import logging
 import sqlite3
+import sys
 
-from flask import Flask, jsonify, json, render_template, request, url_for, redirect, flash
-from werkzeug.exceptions import abort
+from flask import Flask, json, render_template, request, url_for, redirect, flash
 
 
 # Function to get a database connection.
@@ -9,7 +10,7 @@ from werkzeug.exceptions import abort
 def get_db_connection():
     connection = sqlite3.connect('database.db')
     connection.row_factory = sqlite3.Row
-    app.config['DB_CONN_COUNTER'] = 0 + 1
+    app.config['DB_CONN_COUNTER'] += 1
     return connection
 
 
@@ -26,6 +27,13 @@ def get_post(post_id):
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'tech-trends-key'
 app.config['DB_CONN_COUNTER'] = 0
+# set logger to handle STDOUT and STDERR
+stdout_handler = logging.StreamHandler(sys.stdout)
+stderr_handler = logging.StreamHandler(sys.stderr)
+handlers = [stderr_handler, stdout_handler]
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)s %(message)s',
+                    handlers=handlers)
 
 
 @app.route('/healthz')
@@ -75,10 +83,10 @@ def index():
 def post(post_id):
     post = get_post(post_id)
     if post is None:
-        app.logger.info('A non-existing article is accessed and a 404 page is returned.')
+        logging.error('A non-existing article is accessed and a 404 page is returned.')
         return render_template('404.html'), 404
     else:
-        app.logger.info('Article ' + post['title'] + ' retrieved!')
+        logging.info('Article %s retrieved!', post['title'])
         return render_template('post.html', post=post)
 
 
@@ -104,7 +112,7 @@ def create():
                                (title, content))
             connection.commit()
             connection.close()
-            app.logger.info('Article ' + title + ' is created!')
+            logging.info('Article %s is created!', title)
             return redirect(url_for('index'))
 
     return render_template('create.html')
@@ -112,4 +120,4 @@ def create():
 
 # start the application on port 3111
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port='3111', debug=True)
+    app.run(host='0.0.0.0', port='3111')
