@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: techtrends
-        image: khanadnanxyz/techtrends:3a40467
+        image: khanadnanxyz/techtrends:latest
         resources:
           limits:
             memory: "128Mi"

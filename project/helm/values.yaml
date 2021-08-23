@@ -11,7 +11,7 @@ service:
 image:
   repository: khanadnanxyz/techtrends
   pullPolicy: IfNotPresent
-  tag: b54827c
+  tag: latest
 replicaCount: 1
 resources:
   limits:

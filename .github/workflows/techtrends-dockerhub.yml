@@ -36,4 +36,4 @@ jobs:
           file: ./project/Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ${{ secrets.DOCKERHUB_REPO }}/techtrends:${{ steps.vars.outputs.sha_short }}
+          tags: ${{ secrets.DOCKERHUB_REPO }}/techtrends:latest
